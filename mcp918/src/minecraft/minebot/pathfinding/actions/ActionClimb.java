@@ -62,7 +62,7 @@ public class ActionClimb extends ActionPlaceOrBreak {
         if (Minecraft.theMinecraft.theWorld.getBlockState(from.up(3)).getBlock() instanceof BlockFalling) {//it would fall on us and possibly suffocate us
             return COST_INF;
         }
-        return JUMP_ONE_BLOCK_COST + WALK_ONE_BLOCK_COST + getTotalHardnessOfBlocksToBreak(ts);
+        return WALK_ONE_BLOCK_COST / 2 + Math.max(JUMP_ONE_BLOCK_COST, WALK_ONE_BLOCK_COST / 2) + getTotalHardnessOfBlocksToBreak(ts);//we walk half the block to get to the edge, then we walk the other half while simultaneously jumping (math.max because of how it's in parallel)
     }
     int ticksWithoutPlacement = 0;
     @Override
@@ -102,12 +102,6 @@ public class ActionClimb extends ActionPlaceOrBreak {
         //once we are pointing the right way and moving, start jumping
         //this is slightly more efficient because otherwise we might start jumping before moving, and fall down without moving onto the block we want to jump onto
         //also wait until we are close enough, because we might jump and hit our head on an adjacent block
-        BlockPos whereAmI = new BlockPos(thePlayer.posX, thePlayer.posY, thePlayer.posZ);
-        if (whereAmI.equals(to)) {
-            Out.log("Done climbing to " + to);
-            MovementManager.clearMovement();
-            return true;
-        }
-        return false;
+        return Minecraft.theMinecraft.thePlayer.getPosition0().equals(to);
     }
 }
